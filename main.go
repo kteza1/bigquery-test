@@ -4,11 +4,10 @@ import (
 	"fmt"
 
 	journal "github.com/coreos/go-systemd/sdjournal"
+	"github.com/kteza1/bigquery-test/sender"
 )
 
 func main() {
-	fmt.Println("Hello World")
-
 	var err error
 	j, err := journal.NewJournal()
 
@@ -16,6 +15,8 @@ func main() {
 		fmt.Println("Error creating journal handle")
 		return
 	}
+
+	var bqSender = sender.NewBQSender("crested-return-122311", "bq_testing", "can")
 
 	for {
 		n, err := j.Next()
@@ -36,6 +37,11 @@ func main() {
 			fmt.Println("Error getting next record")
 		}
 
-		fmt.Println(r)
+		var batch = sender.NewBatch("can")
+		for i := 0; i < 50; i++ {
+			batch.Append(r.Fields)
+		}
+
+		bqSender.Send(&batch)
 	}
 }
