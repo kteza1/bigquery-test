@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strings"
 
 	journal "github.com/coreos/go-systemd/sdjournal"
 	"github.com/kteza1/bigquery-test/sender"
@@ -31,17 +32,25 @@ func main() {
 			continue
 		}
 
-		r, err := j.GetEntry()
+		record, err := j.GetEntry()
 
-		if err != nil {
-			fmt.Println("Error getting next record")
+		if record.Fields["CHANNEL"] != "canFrame" {
+			continue
 		}
+
+		// Creating a transformed record with all the requered fields
+		var transRecord = make(map[string]string)
+		for key, val := range record.Fields {
+			transRecord[strings.ToLower(key)] = val
+		}
+		transRecord["bike_id"] = "s340-bq-test-1"
+		transRecord["cursor_id"] = record.Cursor
 
 		var batch = sender.NewBatch("can")
 		for i := 0; i < 50; i++ {
-			batch.Append(r.Fields)
+			batch.Append(transRecord)
 		}
 
-		bqSender.Send(&batch)
+		go bqSender.Send(&batch)
 	}
 }

@@ -1,0 +1,8 @@
+[
+    {"name": "bike_id", "type": "string", "mode": "required"},
+    {"name": "can_id", "type": "integer", "mode": "required"},
+    {"name": "data", "type": "string", "mode": "required"},
+    {"name": "cursor_id", "type": "string", "mode": "required"},
+    {"name": "timestamp", "type": "timestamp", "mode": "required"},
+    {"name": "sequence_number", "type": "string", "mode": "nullable"}
+]
