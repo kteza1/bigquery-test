@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	journal "github.com/coreos/go-systemd/sdjournal"
 	"github.com/kteza1/bigquery-test/sender"
@@ -30,7 +31,11 @@ func main() {
 			}
 
 			if n == 0 {
-				j.Wait(journal.IndefiniteWait)
+				j.Wait(10 * time.Second)
+
+				if batch.Timeout(10*time.Second) && batch.Len() > 0 {
+					break
+				}
 				continue
 			}
 
