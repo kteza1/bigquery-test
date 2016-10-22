@@ -20,7 +20,7 @@ def generate_can_frames():
                           seq_num,
                           timestamp)
     print('Can burst ... COUNT = {}'.format(CAN_COUNT))
-    if CAN_COUNT >= 1000000:
+    if CAN_COUNT >= 300000:
         return
     else:
         threading.Timer(1, generate_can_frames).start()
